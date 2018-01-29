@@ -76,7 +76,7 @@ function updateBearingValue(bearing) {
   context.clearRect(0, 0, canvas.width, canvas.height);
   context.translate(canvas.width / 2, canvas.height / 2);
   context.rotate(Math.PI * bearing / 180);
-  context.font = "bold 120px sanserif";
+  context.font = "bold 120px sans-serif";
   context.fillStyle = "#000000";
   context.textAlign = "center";
   context.textBaseline = "middle";
