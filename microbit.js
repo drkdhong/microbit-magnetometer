@@ -15,7 +15,7 @@ const MAGNETOMETER_BEARING = "e95d9715-251d-470a-a062-fa1922dfa9a8";
 
 function onClickStartButton() {
   if (!navigator.bluetooth) {
-    alert("Web Bluetooth is not supported.")
+    showModal("Web Bluetooth is not supported.")
     return;
   }
 
@@ -24,7 +24,7 @@ function onClickStartButton() {
 
 function onClickStopButton() {
   if (!navigator.bluetooth) {
-    alert("Web Bluetooth is not supported.")
+    showModal("Web Bluetooth is not supported.")
     return;
   }
 
@@ -43,14 +43,14 @@ function requestDevice() {
       connect(targetDevice);
     })
     .catch(error => {
-      alert(error);
+      showModal(error);
       targetDevice = null;
     });
 }
 
 function disconnect() {
   if (targetDevice == null) {
-    alert('target device is null.');
+    showModal('target device is null.');
     return;
   }
 
@@ -63,25 +63,14 @@ function connect(device) {
       findMagnetometerService(server);
     })
     .catch(error => {
-      alert(error);
+      showModal(error);
     });
 }
 
 // 方角を表示する
 function updateBearingValue(bearing) {
-  let canvas = document.getElementsByName("Canvas")[0];
-  let context = canvas.getContext('2d');
-
-  context.save();
-  context.clearRect(0, 0, canvas.width, canvas.height);
-  context.translate(canvas.width / 2, canvas.height / 2);
-  context.rotate(Math.PI * bearing / 180);
-  context.font = "bold 120px Roboto";
-  context.fillStyle = "#000000";
-  context.textAlign = "center";
-  context.textBaseline = "middle";
-  context.fillText(bearing + "°", 0, 0);
-  context.restore();
+  $("#compass").rotate(bearing);
+  document.getElementsByName("degree")[0].innerText = bearing + "°"
 }
 
 function findMagnetometerService(server) {
@@ -91,7 +80,7 @@ function findMagnetometerService(server) {
       findMagnetometerBearingCharacteristic(service);
     })
     .catch(error => {
-      alert(error);
+      showModal(error);
     });
 }
 
@@ -101,14 +90,14 @@ function findMagnetometerPeriodCharacteristic(service) {
       writeMagnetometerPeriodValue(characteristic);
     })
     .catch(error => {
-      alert(error);
+      showModal(error);
     });
 }
 
 function writeMagnetometerPeriodValue(characteristic) {
   characteristic.writeValue(new Uint16Array([160]))
     .catch(error => {
-      alert(error);
+      showModal(error);
     });
 }
 
@@ -118,7 +107,7 @@ function findMagnetometerBearingCharacteristic(service) {
       startMagnetometerBearingNotification(characteristic);
     })
     .catch(error => {
-      alert(error);
+      showModal(error);
     });
 }
 
@@ -133,4 +122,9 @@ function startMagnetometerBearingNotification(characteristic) {
 function onMagnetometerBearingChanged(event) {
   let bearing = event.target.value.getUint16(0, true);
   updateBearingValue(bearing);
+}
+
+function showModal(message) {
+  document.getElementsByName("modal-message")[0].innerHTML = message;
+  $("#myModal").modal("show");
 }
